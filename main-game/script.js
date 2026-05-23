@@ -36,11 +36,17 @@ const gameControl = {
     
     // updating the cells of the board 
     playRound(location) {
-        let activePlayer = this.getActivePlayer();
-        gameBoard.board[location] = activePlayer.mark;
-        this.switchPlayer();
+        // making sure the player doesn't select the same cell more than once 
+        if (gameBoard.board[location] === "") {
+            let activePlayer = this.getActivePlayer();
+            gameBoard.board[location] = activePlayer.mark;
+            this.switchPlayer();
+        } else {
+            console.log("Location already selected! Choose a different location.");
+            return;
+        }
         console.log(gameBoard.board);
     },
-};
 
-gameControl.playRound(3);
+
+};
