@@ -94,9 +94,13 @@ const gameControl = {
     showScore () {
         console.log(`${this.players[0].name} score: ${this.players[0].score}`);
         console.log(`${this.players[1].name} score: ${this.players[1].score}`);
-    }
+    },
 
-    // function to play 3 rounds then declare the winner 
+    gameReset () {
+        this.activePlayerIndex = 0;
+        this.players[0].score = 0;
+        this.players[1].score = 0;
+    }
     
 };
 
