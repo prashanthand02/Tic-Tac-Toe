@@ -2,7 +2,8 @@
 player = (name, mark) => {
     return {
         name: name,
-        mark: mark
+        mark: mark,
+        score: 0
     }
 };
 
@@ -40,13 +41,69 @@ const gameControl = {
         if (gameBoard.board[location] === "") {
             let activePlayer = this.getActivePlayer();
             gameBoard.board[location] = activePlayer.mark;
+            this.lastPlayer = activePlayer;
+            console.log(gameBoard.board);
             this.switchPlayer();
+            this.winText();
         } else {
             console.log("Location already selected! Choose a different location.");
             return;
-        }
-        console.log(gameBoard.board);
+        };
     },
 
+    winConditions: [
+        [0, 1, 2], 
+        [3, 4, 5], 
+        [6, 7, 8], 
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8], 
+        [0, 4, 8],
+        [2, 4, 6]
+    ], 
 
+    winText() {
+        for (let i = 0; i < this.winConditions.length; i++) {
+            let activePlayer = this.getActivePlayer();
+            const conditions = this.winConditions[i];
+            const cellA = gameBoard.board[conditions[0]];
+            const cellB = gameBoard.board[conditions[1]];
+            const cellC = gameBoard.board[conditions[2]];
+            
+            if (cellA === cellB && cellB === cellC && cellA != "") {
+                console.log(`${this.lastPlayer.name} with "${this.lastPlayer.mark}" won`);
+                this.lastPlayer.score++;
+                this.reset();
+            } else if (!gameBoard.board.includes("")) {
+                console.log(`It's a draw`);
+                this.reset();
+            };
+        };
+    },
+
+    // A reset function that resets the game board 
+    reset() {
+        for (let i = 0; i < gameBoard.board.length; i++) {
+            gameBoard.board[i] = "";
+        }
+        this.activePlayerIndex = 0;
+        this.showScore();
+    },
+
+    // A function to console log the player's name with the score
+    showScore () {
+        console.log(`${this.players[0].name} score: ${this.players[0].score}`);
+        console.log(`${this.players[1].name} score: ${this.players[1].score}`);
+    }
+
+    // function to play 3 rounds then declare the winner 
+    
 };
+
+
+// gameControl.playRound(0);//c
+// gameControl.playRound(3);//o
+// gameControl.playRound(6);//c
+// gameControl.playRound(4);//o
+// gameControl.playRound(8);//c
+// gameControl.playRound(5);//o
