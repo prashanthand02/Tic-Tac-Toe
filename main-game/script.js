@@ -15,8 +15,8 @@ const gameBoard = {
 // Object for the game flow 
 const gameControl = {
     players: [
-        player1 = player("bob", "C"),
-        player2 = player("alex", "O")
+        player1 = player("Player1", "X"),
+        player2 = player("Player2", "O")
     ],
 
     // function to switch player 
@@ -41,10 +41,12 @@ const gameControl = {
         if (gameBoard.board[location] === "") {
             let activePlayer = this.getActivePlayer();
             gameBoard.board[location] = activePlayer.mark;
+            displayGame.gamecells();
             this.lastPlayer = activePlayer;
-            console.log(gameBoard.board);
             this.switchPlayer();
+            displayGame.updateCell();
             this.winText();
+            console.log(gameBoard.board);
         } else {
             console.log("Location already selected! Choose a different location.");
             return;
@@ -74,9 +76,13 @@ const gameControl = {
                 console.log(`${this.lastPlayer.name} with "${this.lastPlayer.mark}" won`);
                 this.lastPlayer.score++;
                 this.reset();
+                return true;
             } else if (!gameBoard.board.includes("")) {
                 console.log(`It's a draw`);
                 this.reset();
+                return true;
+            } else {
+                return false;
             };
         };
     },
@@ -88,6 +94,7 @@ const gameControl = {
         }
         this.activePlayerIndex = 0;
         this.showScore();
+        displayGame.clearBoard();
     },
 
     // A function to console log the player's name with the score
@@ -100,10 +107,47 @@ const gameControl = {
         this.activePlayerIndex = 0;
         this.players[0].score = 0;
         this.players[1].score = 0;
+        this.reset();
+        displayGame.clearBoard();
     }
     
 };
 
+const gameContainer = document.getElementById(`gameBoard`);
+
+const displayGame = {
+    
+    gamecells() {
+        gameContainer.innerHTML = '';
+        for (let i = 0; i < gameBoard.board.length; i++) {
+            cell = document.createElement(`div`);
+            cell.classList.add(`gameCells`);
+            cell.textContent = gameBoard.board[i];
+            cell.style.border = `1px solid black`;
+            cell.style.height = `40px`;
+            cell.style.width = `40px`;
+            gameContainer.appendChild(cell);
+        };
+    },
+
+    clearBoard() {
+        for (let i = 0; i < gameBoard.board.length; i++) {
+            gameContainer.children[i].textContent = "";
+        }
+    },
+
+    updateCell () {
+        const cells = document.querySelectorAll(`.gameCells`);
+        cells.forEach((cell, idx) => {
+            cell.addEventListener(`click`, () => {
+                gameControl.playRound(idx);
+            });
+        });
+    },
+};
+
+displayGame.gamecells();
+displayGame.updateCell();
 
 // gameControl.playRound(0);//c
 // gameControl.playRound(3);//o
