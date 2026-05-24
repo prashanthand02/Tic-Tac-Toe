@@ -1,3 +1,9 @@
+//Getting all the HTMl tags
+const winstatement = document.getElementById(`winText`);
+const scoreCard = document.getElementById(`scoreCard`);
+const invalidLocation = document.getElementById(`invalidLocation`);
+const resetGameBtn = document.getElementById(`reset`);
+
 // function to make the players 
 player = (name, mark) => {
     return {
@@ -46,9 +52,8 @@ const gameControl = {
             this.switchPlayer();
             displayGame.updateCell();
             this.winText();
-            console.log(gameBoard.board);
         } else {
-            console.log("Location already selected! Choose a different location.");
+            invalidLocation.textContent = `Location already selected! Choose a different location.`
             return;
         };
     },
@@ -73,18 +78,20 @@ const gameControl = {
             const cellC = gameBoard.board[conditions[2]];
             
             if (cellA === cellB && cellB === cellC && cellA != "") {
-                console.log(`${this.lastPlayer.name} with "${this.lastPlayer.mark}" won`);
+                winstatement.textContent = `🎉${this.lastPlayer.name} with "${this.lastPlayer.mark}" won🎉`;
                 this.lastPlayer.score++;
                 this.reset();
+                displayGame.clearBoard();
                 return true;
-            } else if (!gameBoard.board.includes("")) {
-                console.log(`It's a draw`);
-                this.reset();
-                return true;
-            } else {
-                return false;
             };
         };
+        if (!gameBoard.board.includes("")) {
+            winstatement.textContent = `It's a draw`;
+            this.reset();
+            displayGame.clearBoard();
+            return true;
+        };
+        return false;
     },
 
     // A reset function that resets the game board 
@@ -99,12 +106,11 @@ const gameControl = {
 
     // A function to console log the player's name with the score
     showScore () {
-        console.log(`${this.players[0].name} score: ${this.players[0].score}`);
-        console.log(`${this.players[1].name} score: ${this.players[1].score}`);
+        scoreCard.textContent = `${this.players[0].name} score: ${this.players[0].score},
+        ${this.players[1].name} score: ${this.players[1].score}`
     },
 
     gameReset () {
-        this.activePlayerIndex = 0;
         this.players[0].score = 0;
         this.players[1].score = 0;
         this.reset();
@@ -116,27 +122,29 @@ const gameControl = {
 const gameContainer = document.getElementById(`gameBoard`);
 
 const displayGame = {
-    
+    //function that reders the game board and its content
     gamecells() {
         gameContainer.innerHTML = '';
+        gameControl.showScore();
         for (let i = 0; i < gameBoard.board.length; i++) {
             cell = document.createElement(`div`);
             cell.classList.add(`gameCells`);
             cell.textContent = gameBoard.board[i];
-            cell.style.border = `1px solid black`;
-            cell.style.height = `40px`;
-            cell.style.width = `40px`;
             gameContainer.appendChild(cell);
         };
     },
-
+    
+    //function that clears the board 
     clearBoard() {
         for (let i = 0; i < gameBoard.board.length; i++) {
             gameContainer.children[i].textContent = "";
         }
     },
 
+    //function that updates the cells of the board when clicked
     updateCell () {
+        winstatement.textContent = ``;
+        invalidLocation.textContent = ``;
         const cells = document.querySelectorAll(`.gameCells`);
         cells.forEach((cell, idx) => {
             cell.addEventListener(`click`, () => {
@@ -149,9 +157,9 @@ const displayGame = {
 displayGame.gamecells();
 displayGame.updateCell();
 
-// gameControl.playRound(0);//c
-// gameControl.playRound(3);//o
-// gameControl.playRound(6);//c
-// gameControl.playRound(4);//o
-// gameControl.playRound(8);//c
-// gameControl.playRound(5);//o
+// Adding to event listener to reset btn 
+resetGameBtn.addEventListener(`click`, () => {
+    gameControl.gameReset();
+    winstatement.textContent = ``;
+     invalidLocation.textContent = ``;
+});
